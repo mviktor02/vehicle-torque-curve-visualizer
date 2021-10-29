@@ -1,0 +1,85 @@
+<Manager>:
+    MenuScreen:
+    ChooseFileScreen:
+    GraphsScreen:
+<MenuScreen>:
+    name:"menu_screen"
+    FloatLayout:
+        Label:
+            text:"Torque Curve Visualizer"
+            halign: 'center'
+            font_size:36
+            size_hint_y:.1
+            pos_hint:{"top":1}
+        Button:
+            text:"Begin"
+            size_hint_y:.2
+            pos_hint:{"top":.6}
+            on_release:root.choose_file_screen()
+<ChooseFileScreen>:
+    name:"choose_file_screen"
+    FloatLayout:
+        FileChooserListView:
+            id: file_chooser
+            pos_hint:{"top":1}
+            size_hint_y:.95
+            on_selection:root.test_button(file_chooser.selection)
+        BoxLayout:
+            Label:
+                size_hint_x:.8
+                size_hint_y:.05
+                text:file_chooser.selection[0] if root.can_load(file_chooser.selection) else "Please choose a valid json file"
+            Button:
+                id: load_button
+                text:"Load File"
+                size_hint_x:.2
+                size_hint_y:.05
+                on_release:root.load(file_chooser.selection)
+                disabled:True
+<GraphsScreen>:
+    name:"graphs_screen"
+    FloatLayout:
+        ActionBar:
+            id: action_bar
+            pos_hint:{"top":1}
+            size_hint_y:.05
+            ActionView:
+                id: action_view
+                ActionPrevious:
+                    title:"Back"
+                    on_release:root.manager.current="menu_screen"
+                ActionSeparator:
+                ActionButton:
+                    id: tweak_gears_btn
+                    text: "Tweak Gear Ratios"
+                    disabled: True
+                    opacity: 0
+                    on_release: root.open_tweak_gears_popup()
+        BoxLayout:
+            id: torque_and_hp
+            size_hint_y: .85
+            pos_hint: {"top":.95}
+        BoxLayout:
+            id: wheel_torque
+            size_hint_y: .85
+            pos_hint: {"top": .95, "x": .5}
+        BoxLayout:
+            id: export
+            size_hint_y: .1
+            TextInput:
+                id: namer
+                multiline: False
+                hint_text: "File Name"
+                padding_x:
+                    [self.center[0] - self._get_text_width(max(self._lines, key=len), self.tab_width, self._label_cached) / 2.0,
+                    0] if self.text else [self.center[0] - self._get_text_width(self.hint_text, self.tab_width, self._label_cached) / 2.0, 0]
+                padding_y: [self.height / 2.0 - (self.line_height / 2.0) * len(self._lines), 0]
+            Button:
+                text: "Export Torque Curve"
+                on_release: root.export_as(0)
+            Button:
+                id: export_gears_btn
+                text: "Export Wheel Torques per Gear"
+                disabled: True
+                on_release: root.export_as(1)
+<GearRatioPopup>:
